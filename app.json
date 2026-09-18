@@ -3,7 +3,7 @@
     "name": "Medicine Tracker",
     "slug": "medicine-tracker",
     "scheme": "medtracker",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "assetBundlePatterns": [
@@ -21,12 +21,11 @@
     },
     "android": {
       "package": "com.medicinetracker",
-      "edgeToEdgeEnabled": true,
       "permissions": [
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",
         "WAKE_LOCK",
-        "USE_EXACT_ALARM",
+        "SCHEDULE_EXACT_ALARM",
         "POST_NOTIFICATIONS",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
@@ -53,8 +52,7 @@
         {
           "microphonePermission": false
         }
-      ],
-      "expo-font"
+      ]
     ],
     "experiments": {
       "typedRoutes": true
