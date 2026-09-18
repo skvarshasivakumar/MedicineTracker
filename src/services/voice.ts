@@ -1,27 +1,10 @@
 import * as Speech from 'expo-speech';
-import * as FileSystem from 'expo-file-system/legacy';
+import { Audio } from 'expo-av';
+import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
 import { Platform } from 'react-native';
 import { voiceClips } from './voiceClips';
 
-// expo-av is deprecated in Expo SDK 54+ and its native module can fail to
-// initialise on Android 16 devices. Load it lazily so the app still boots
-// even if the module is missing/broken; playback just silently no-ops.
-let _AudioMod: any | null = null;
-let _audioLoadFailed = false;
-async function loadAudio(): Promise<any | null> {
-  if (_AudioMod) return _AudioMod;
-  if (_audioLoadFailed) return null;
-  try {
-    const mod = await import('expo-av');
-    _AudioMod = (mod as any).Audio;
-    return _AudioMod;
-  } catch (e) {
-    console.warn('[voice] expo-av unavailable; clip playback disabled', e);
-    _audioLoadFailed = true;
-    return null;
-  }
-}
 
 type QueueItem = () => Promise<void>;
 const queue: QueueItem[] = [];
@@ -173,8 +156,6 @@ async function speakWeb(text: string, lang: 'en' | 'ta'): Promise<void> {
 async function tryPlayClip(filename: string): Promise<boolean> {
   const lower = filename.toLowerCase();
   if (!AUDIO_EXT_OK.some((e) => lower.endsWith(e))) return false;
-  const Audio = await loadAudio();
-  if (!Audio) return false;
   try {
     const source = voiceClips[filename];
     if (!source) {
@@ -200,9 +181,9 @@ async function tryPlayClip(filename: string): Promise<boolean> {
   }
 }
 
-function waitForPlayback(sound: any): Promise<void> {
+function waitForPlayback(sound: Audio.Sound): Promise<void> {
   return new Promise((resolve) => {
-    sound.setOnPlaybackStatusUpdate((st: any) => {
+    sound.setOnPlaybackStatusUpdate((st) => {
       if (!('isLoaded' in st) || !st.isLoaded) return;
       if (st.didJustFinish) resolve();
     });
