@@ -1,19 +1,3 @@
-Searched for files matching `**/src/empty-font.ttf`, 1 match
-
-No matches found. Your search pattern might be excluded completely by either the search.exclude settings or .*ignore files.
-If you believe that it should have results, you can check into the .*ignore files and the exclude setting (here are some excluded patterns for reference:[**/node_modules,**/bower_components,**/*.code-search]).
-Then if you want to include those files you can call the tool again by setting "includeIgnoredFiles" to true.
-
-Read 
-
-Read , lines 1 to 30
-
-Searched for regex `import.*'expo-av'|from 'expo-av'` (`**/*.{ts,tsx}`), 1 result
-
-Searched for regex `expo-file-system` (`**/*.{ts,tsx}`), 1 result
-
-Read , lines 1 to 80
-
 I've analyzed the code. The most likely cause of your Android 16 crash is a **Reanimated v4 babel plugin misconfiguration**, plus some Android SDK 35+ (edge-to-edge) config gaps. Let me fix these.
 
 ## Root causes

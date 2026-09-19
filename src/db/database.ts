@@ -3,8 +3,9 @@ import { Platform } from 'react-native';
 import { openWebDatabaseShim } from './webShim';
 
 let _db: SQLite.SQLiteDatabase | null = null;
+let _schemaReady = false;
 
-export function getDb(): SQLite.SQLiteDatabase {
+function ensureDbInstance(): SQLite.SQLiteDatabase {
   if (!_db) {
     if (Platform.OS === 'web') {
       _db = openWebDatabaseShim() as unknown as SQLite.SQLiteDatabase;
@@ -16,9 +17,23 @@ export function getDb(): SQLite.SQLiteDatabase {
   return _db;
 }
 
+export function getDb(): SQLite.SQLiteDatabase {
+  const db = ensureDbInstance();
+  if (!_schemaReady) {
+    try {
+      initDb();
+    } catch (e) {
+      console.warn('[db] lazy init failed', e);
+    }
+  }
+  return db;
+}
+
 /** Run all schema + safe migrations. Idempotent on every launch. */
 export function initDb(): void {
-  const db = getDb();
+  const db = ensureDbInstance();
+  if (_schemaReady) return;
+
   db.execSync(`
     CREATE TABLE IF NOT EXISTS user (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -82,4 +97,6 @@ export function initDb(): void {
       value TEXT NOT NULL
     );
   `);
+
+  _schemaReady = true;
 }

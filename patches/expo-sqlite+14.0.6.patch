@@ -1,0 +1,20 @@
+diff --git a/node_modules/expo-sqlite/android/build.gradle b/node_modules/expo-sqlite/android/build.gradle
+index a43cfac..06484de 100644
+--- a/node_modules/expo-sqlite/android/build.gradle
++++ b/node_modules/expo-sqlite/android/build.gradle
+@@ -87,9 +87,14 @@ def createNativeDepsDirectories = tasks.register('createNativeDepsDirectories')
+   SQLITE3_SRC_DIR.mkdirs()
+ }
+ 
++def localSQLiteZip = new File(rootDir, ".sqlite-downloads/sqlite-amalgamation-${SQLITE_VERSION}.zip")
++
+ def downloadSQLite = tasks.register('downloadSQLite', Download) {
+   dependsOn(createNativeDepsDirectories)
+-  src("https://www.sqlite.org/2024/sqlite-amalgamation-${SQLITE_VERSION}.zip")
++  def source = localSQLiteZip.exists()
++    ? localSQLiteZip.toURI().toString()
++    : "https://www.sqlite.org/2024/sqlite-amalgamation-${SQLITE_VERSION}.zip"
++  src(source)
+   onlyIfNewer(true)
+   overwrite(false)
+   dest(new File(downloadsDir, "sqlite-amalgamation-${SQLITE_VERSION}.zip"))
